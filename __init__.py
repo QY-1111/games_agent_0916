@@ -34,7 +34,7 @@ class ThreeJSPreview:
     @classmethod
     def INPUT_TYPES(cls):
         return {"required": {
-            "code": ("STRING", {"multiline": True, "default": "", "tooltip": "粘贴单文件 HTML / JS，或将此控件转换为输入后连接模型 STRING 输出。"}),
+            "code": ("STRING", {"forceInput": True, "tooltip": "连接模型或文本输入节点的 STRING 输出。代码编辑放在上游节点，当前节点仅显示交互预览。"}),
             "height": ("INT", {"default": 420, "min": 240, "max": 1200, "step": 20}),
         }}
 
@@ -52,7 +52,22 @@ class ThreeJSPreview:
                 "result": (source,)}
 
 
-NODE_CLASS_MAPPINGS = {"ThreeJSPreview": ThreeJSPreview}
-NODE_DISPLAY_NAME_MAPPINGS = {"ThreeJSPreview": "Three.js 代码预览"}
+class ThreeJSCode:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {"required": {"code": ("STRING", {"multiline": True, "default": ""})}}
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("code",)
+    FUNCTION = "text"
+    CATEGORY = "Three.js"
+    DESCRIPTION = "可选的独立代码输入节点。已有模型或文本节点时无需添加。"
+
+    def text(self, code):
+        return (code,)
+
+
+NODE_CLASS_MAPPINGS = {"ThreeJSPreview": ThreeJSPreview, "ThreeJSCode": ThreeJSCode}
+NODE_DISPLAY_NAME_MAPPINGS = {"ThreeJSPreview": "Three.js 代码预览", "ThreeJSCode": "Three.js 代码输入"}
 WEB_DIRECTORY = "./web"
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]

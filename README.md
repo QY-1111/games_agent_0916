@@ -31,14 +31,16 @@ ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/preview.js
 
 1. 将 `MODEL_PROMPT.txt` 作为模型的系统提示词，在用户提示词中填写场景需求。
 2. 添加模型文本输出节点和 `Three.js 代码预览` 节点。
-3. 将预览节点的 `code` 控件转换为输入（右键菜单 Convert widget to input / 转换为输入，具体位置依前端版本），把模型的 STRING 输出连接到 `code`。
+3. 把模型的 STRING 输出直接连接到预览节点的 `code` 输入口。预览节点不再显示代码编辑框，主体区域用于交互场景。
 4. 执行工作流。场景出现在预览节点内部；鼠标操作由场景代码实现，示例支持拖动旋转、滚轮缩放。
 
 连接结构：`模型节点的 STRING 输出 → Three.js 代码预览.code`
 
 模型输出协议是单个 HTML Markdown 代码块，具体见 `MODEL_PROMPT.txt`。将模型节点的文本字段（常见名称为 `text`、`content` 或 `response`，以实际节点为准）作为 STRING 连接到 `code`；如果上游返回整个 API JSON，先提取其中的文本，不要直接传入包含 `choices`、`usage` 等字段的完整响应。
 
-也可将 `examples/demo-workflow.json` 拖入 ComfyUI 加载单节点示例，或直接把 `examples/demo.html` 内容粘贴到 `code` 并执行，无需模型。输出端 `extracted_code` 是提取后的文本，可继续接其他文本节点；本插件不输出 IMAGE 张量。
+也可将 `examples/demo-workflow.json` 拖入 ComfyUI 加载示例，或添加 `Three.js 代码输入` 节点，把 `examples/demo.html` 粘贴进去后连接预览节点，无需模型。已有 Text Input 或模型文本节点时直接连接即可，无需额外添加代码输入节点。输出端 `extracted_code` 是提取后的文本，可继续接其他文本节点；本插件不输出 IMAGE 张量。
+
+紧凑布局版本更新后，请重新添加预览节点并连接原来的文本输出；旧工作流可能保留旧版代码控件和节点尺寸。若旧节点中有手动输入的代码，请先复制到独立文本节点再替换。ByteArtist 的定制 `/next` 画布未显示此 DOM 预览控件；在已检查的实例中，通过「更多 → 切换至 ComfyUI 原生」可显示工具栏与预览区域。
 
 ## 接受的格式
 

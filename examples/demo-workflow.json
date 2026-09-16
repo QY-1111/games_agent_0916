@@ -1,22 +1,60 @@
 {
-  "last_node_id": 1,
-  "last_link_id": 0,
+  "last_node_id": 2,
+  "last_link_id": 1,
   "nodes": [
     {
-      "id": 1,
-      "type": "ThreeJSPreview",
+      "id": 2,
+      "type": "ThreeJSCode",
       "pos": [
-        120,
+        100,
         100
       ],
       "size": [
-        560,
-        740
+        520,
+        420
       ],
       "flags": {},
       "order": 0,
       "mode": 0,
       "inputs": [],
+      "outputs": [
+        {
+          "name": "code",
+          "type": "STRING",
+          "links": [
+            1
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ThreeJSCode"
+      },
+      "widgets_values": [
+        "<!doctype html>\n<html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>Three.js Preview Demo</title>\n<script type=\"importmap\">{\"imports\":{\"three\":\"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js\",\"three/addons/\":\"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/\"}}</script>\n<style>html,body{margin:0;height:100%;overflow:hidden;background:#101522}canvas{display:block}.label{position:absolute;left:20px;top:18px;color:#dce7ff;font:14px system-ui;pointer-events:none}</style>\n</head><body><div class=\"label\">THREE.JS · 拖动旋转 / 滚轮缩放</div>\n<script type=\"module\">\nimport * as THREE from 'three';\nimport { OrbitControls } from 'three/addons/controls/OrbitControls.js';\nconst scene = new THREE.Scene();\nscene.background = new THREE.Color('#101522');\nconst camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);\ncamera.position.set(4, 2.5, 5);\nconst renderer = new THREE.WebGLRenderer({antialias:true});\nrenderer.setPixelRatio(Math.min(devicePixelRatio,2));\nrenderer.setSize(innerWidth, innerHeight);\nrenderer.toneMapping = THREE.ACESFilmicToneMapping;\ndocument.body.appendChild(renderer.domElement);\nconst controls = new OrbitControls(camera, renderer.domElement);\ncontrols.enableDamping = true; controls.minDistance = 3; controls.maxDistance = 12;\nscene.add(new THREE.HemisphereLight(0xc5dbff, 0x303040, 2));\nconst key = new THREE.DirectionalLight(0xffffff, 4); key.position.set(3,4,5); scene.add(key);\nconst rim = new THREE.PointLight(0x905aff, 70); rim.position.set(-3,2,-2); scene.add(rim);\nconst mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(1,0.28,160,24), new THREE.MeshStandardMaterial({color:0x49d9de,metalness:0.65,roughness:0.24}));\nscene.add(mesh);\nconst clock = new THREE.Clock();\nrenderer.setAnimationLoop(() => {mesh.rotation.y += Math.min(clock.getDelta(),0.05)*0.3; controls.update(); renderer.render(scene,camera);});\naddEventListener('resize', () => {camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});\n</script></body></html>\n"
+      ]
+    },
+    {
+      "id": 1,
+      "type": "ThreeJSPreview",
+      "pos": [
+        740,
+        100
+      ],
+      "size": [
+        560,
+        500
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "code",
+          "type": "STRING",
+          "link": 1
+        }
+      ],
       "outputs": [
         {
           "name": "extracted_code",
@@ -29,12 +67,20 @@
         "Node name for S&R": "ThreeJSPreview"
       },
       "widgets_values": [
-        "<!doctype html>\n<html lang=\"zh-CN\"><head><meta charset=\"utf-8\"><title>Three.js Preview Demo</title>\n<script type=\"importmap\">{\"imports\":{\"three\":\"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js\",\"three/addons/\":\"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/\"}}</script>\n<style>html,body{margin:0;height:100%;overflow:hidden;background:#101522}canvas{display:block}.label{position:absolute;left:20px;top:18px;color:#dce7ff;font:14px system-ui;pointer-events:none}</style>\n</head><body><div class=\"label\">THREE.JS · 拖动旋转 / 滚轮缩放</div>\n<script type=\"module\">\nimport * as THREE from 'three';\nimport { OrbitControls } from 'three/addons/controls/OrbitControls.js';\nconst scene = new THREE.Scene();\nscene.background = new THREE.Color('#101522');\nconst camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);\ncamera.position.set(4, 2.5, 5);\nconst renderer = new THREE.WebGLRenderer({antialias:true});\nrenderer.setPixelRatio(Math.min(devicePixelRatio,2));\nrenderer.setSize(innerWidth, innerHeight);\nrenderer.toneMapping = THREE.ACESFilmicToneMapping;\ndocument.body.appendChild(renderer.domElement);\nconst controls = new OrbitControls(camera, renderer.domElement);\ncontrols.enableDamping = true; controls.minDistance = 3; controls.maxDistance = 12;\nscene.add(new THREE.HemisphereLight(0xc5dbff, 0x303040, 2));\nconst key = new THREE.DirectionalLight(0xffffff, 4); key.position.set(3,4,5); scene.add(key);\nconst rim = new THREE.PointLight(0x905aff, 70); rim.position.set(-3,2,-2); scene.add(rim);\nconst mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(1,0.28,160,24), new THREE.MeshStandardMaterial({color:0x49d9de,metalness:0.65,roughness:0.24}));\nscene.add(mesh);\nconst clock = new THREE.Clock();\nrenderer.setAnimationLoop(() => {mesh.rotation.y += Math.min(clock.getDelta(),0.05)*0.3; controls.update(); renderer.render(scene,camera);});\naddEventListener('resize', () => {camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});\n</script></body></html>\n",
         420
       ]
     }
   ],
-  "links": [],
+  "links": [
+    [
+      1,
+      2,
+      0,
+      1,
+      0,
+      "STRING"
+    ]
+  ],
   "groups": [],
   "config": {},
   "extra": {},

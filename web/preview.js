@@ -149,7 +149,7 @@ function attachPreview(node) {
     delete node._threePreview;
     return removed?.apply(this, arguments);
   };
-  node.setSize([560, 740]);
+  node.setSize([560, Math.max(500, node.computeSize()[1])]);
 }
 
 app.registerExtension({
