@@ -19,10 +19,13 @@ git clone https://github.com/QY-1111/games_agent_0916.git ComfyUI-ThreeJS-Previe
 ```
 ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/__init__.py
 ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/preview.js
-ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/lib/document.mjs
 ```
 
-重启 ComfyUI 后刷新浏览器（必要时 Ctrl+F5）。搜索 `ThreeJSPreview` 或 `Three.js 代码预览`，分类为 `Three.js`。支持 Python V1 自定义节点接口和 `addDOMWidget` 前端接口；尚未在你的实际 ComfyUI 版本上验证。若新节点渲染模式下不显示 DOM 控件，请尝试在设置中切换到经典节点画布并刷新。
+重启 ComfyUI 后刷新浏览器（必要时 Ctrl+F5）。搜索 `ThreeJSPreview` 或 `Three.js 代码预览`，分类为 `Three.js`。添加节点后，应立即看到预览工具栏与“预览组件已就绪”提示；执行工作流后，模型输出会自动渲染在节点内部，不需要连接 `extracted_code` 输出口。支持 Python V1 自定义节点接口和 `addDOMWidget` 前端接口，已补充当前前端使用的 DOM 高度参数；尚未在你的实际 ComfyUI 版本上验证。
+
+### 更新已有安装
+
+在插件目录运行 `git pull`，重启 ComfyUI 并 Ctrl+F5 刷新页面。此版改为单个前端 JS 文件，移除额外 `.mjs` 模块加载，使用 `nodeCreated` / `loadedGraphNode` 挂载预览并在执行时补挂载，显式声明 DOM 预览高度，并兼容通过局域网 HTTP 访问时缺少 `crypto.randomUUID` 的浏览器环境。
 
 ## 接入模型
 
@@ -46,7 +49,7 @@ ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/lib/document.mjs
 
 Three.js 在浏览器 GPU 上执行，不依赖 ComfyUI 的 CUDA。默认补齐的版本为固定的 0.170.0；完整 HTML 可自带一致版本的 import map。首次加载需要浏览器能联网访问 CDN。预览刷新、重新运行和放大/关闭放大会重建场景，交互状态随之重置。停止或删除节点会销毁 iframe；保存工作流不保存实时渲染状态，重新打开后执行即可恢复。
 
-预览使用独立来源的 sandbox iframe，不开放 same-origin、弹窗或父页面 API 权限。CSP 允许 jsDelivr、unpkg、esm.sh 的脚本与 fetch，以及 HTTPS 图片；不支持本地 API、任意资源服务器、eval 或内嵌子页面。隔离并非 CPU/GPU 配额限制，无限循环仍可能卡住页面；只预览可信来源的代码。需要其他资源域名时应明确评估并修改 `web/lib/document.mjs` 内的策略。
+预览使用独立来源的 sandbox iframe，不开放 same-origin、弹窗或父页面 API 权限。CSP 允许 jsDelivr、unpkg、esm.sh 的脚本与 fetch，以及 HTTPS 图片；不支持本地 API、任意资源服务器、eval 或内嵌子页面。隔离并非 CPU/GPU 配额限制，无限循环仍可能卡住页面；只预览可信来源的代码。需要其他资源域名时应明确评估并修改 `web/preview.js` 内的策略。
 
 下载得到经预览处理的 HTML，包含导入映射、限制策略和错误桥接，建议通过本地 HTTP 服务打开；不会自动写入 ComfyUI output 目录。无自定义服务端路由，无自动安装依赖，无模型 API 密钥需求。
 
