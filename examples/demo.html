@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>Three.js Preview Demo</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#101522}canvas{display:block}.label{position:absolute;left:20px;top:18px;color:#dce7ff;font:14px system-ui;pointer-events:none}</style>
+</head><body><div class="label">THREE.JS · 拖动旋转 / 滚轮缩放</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#101522');
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.1, 100);
+camera.position.set(4, 2.5, 5);
+const renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+document.body.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.minDistance = 3; controls.maxDistance = 12;
+scene.add(new THREE.HemisphereLight(0xc5dbff, 0x303040, 2));
+const key = new THREE.DirectionalLight(0xffffff, 4); key.position.set(3,4,5); scene.add(key);
+const rim = new THREE.PointLight(0x905aff, 70); rim.position.set(-3,2,-2); scene.add(rim);
+const mesh = new THREE.Mesh(new THREE.TorusKnotGeometry(1,0.28,160,24), new THREE.MeshStandardMaterial({color:0x49d9de,metalness:0.65,roughness:0.24}));
+scene.add(mesh);
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {mesh.rotation.y += Math.min(clock.getDelta(),0.05)*0.3; controls.update(); renderer.render(scene,camera);});
+addEventListener('resize', () => {camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+</script></body></html>
