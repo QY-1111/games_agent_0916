@@ -40,6 +40,17 @@ await page.getByRole('button',{name:'停止',exact:true}).click();if(await page.
 await page.getByRole('button',{name:'重新运行'}).click();await page.frameLocator('iframe').locator('canvas').waitFor();
 await page.evaluate(()=>node.onExecuted({threejs_code:['throw new Error("TEST_ERROR")'],threejs_kind:['javascript'],threejs_height:[420]}));
 await page.getByText('错误：Uncaught Error: TEST_ERROR',{exact:false}).waitFor();
+for (const mapping of [
+  '{"imports":{"three":null}}',
+  '{"imports":{"three":"three","three/addons/":"./addons/"}}',
+  '{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":null}}',
+  '{invalid json',
+  '{"scopes":{"https://cdn.jsdelivr.net/":{"three":null}}}'
+]) {
+  const html = '<script type="module">import * as THREE from "three"; import {OrbitControls} from "three/addons/controls/OrbitControls.js"; document.body.textContent="IMPORT_OK_"+THREE.REVISION+"_"+typeof OrbitControls;</script><script type="importmap">'+mapping+'</script>';
+  await page.evaluate(html=>node.onExecuted({threejs_code:[html],threejs_kind:['html'],threejs_height:[420]}), html);
+  await page.frameLocator('iframe').getByText('IMPORT_OK_170_function',{exact:true}).waitFor();
+}
 await page.evaluate(()=>node.onRemoved());if(await page.locator('iframe').count())throw Error('Cleanup failed');
 await page.evaluate(()=>{window.recovered=new node.constructor();recovered.onExecuted({threejs_code:['<h1>RECOVERED</h1>'],threejs_kind:['html'],threejs_height:[560]});});
 await page.frameLocator('iframe').getByText('RECOVERED').waitFor();

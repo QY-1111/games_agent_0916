@@ -38,10 +38,51 @@ function buildDocument(source, kind, token) {
     addEventListener('securitypolicyviolation', e => send('error', '资源被预览策略阻止：' + e.blockedURI));
     addEventListener('load', () => send('loaded', '页面已加载；若画面为空，请检查代码或 WebGL'));
   })();`;
-  if (!doc.querySelector('script[type="importmap"]')) {
-    const map = doc.createElement('script'); map.type = 'importmap'; map.textContent = JSON.stringify(IMPORTS);
-    doc.head.prepend(map);
+  const merged = { imports: {}, scopes: {} };
+  for (const element of doc.querySelectorAll('script[type="importmap"]')) {
+    try {
+      const value = JSON.parse(element.textContent);
+      if (value?.imports && typeof value.imports === 'object' && !Array.isArray(value.imports))
+        Object.assign(merged.imports, value.imports);
+      if (value?.scopes && typeof value.scopes === 'object' && !Array.isArray(value.scopes)) {
+        for (const [scope, mappings] of Object.entries(value.scopes)) {
+          if (mappings && typeof mappings === 'object' && !Array.isArray(mappings))
+            merged.scopes[scope] = Object.assign(merged.scopes[scope] || {}, mappings);
+        }
+      }
+    } catch {
+      console.warn('[ThreeJSPreview] Invalid import map replaced with supported defaults.');
+    }
+    element.remove();
   }
+  const validAddress = (value, prefix = false) => {
+    if (typeof value !== 'string' || value.trim() !== value) return false;
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && ['cdn.jsdelivr.net', 'unpkg.com', 'esm.sh'].includes(url.hostname)
+        && !url.username && !url.password && (!prefix || value.endsWith('/'));
+    } catch { return false; }
+  };
+  // A null or invalid address blocks a bare import, even when another map has a fallback.
+  // Repair core and addons together to keep the chosen Three.js version consistent.
+  if (!validAddress(merged.imports.three) || !validAddress(merged.imports['three/addons/'], true)) {
+    const candidate = [merged.imports.three, merged.imports['three/addons/']]
+      .find(value => validAddress(value) && /\/three@\d+\.\d+\.\d+\//.test(value));
+    const version = candidate?.match(/\/three@(\d+\.\d+\.\d+)\//)?.[1] || VERSION;
+    merged.imports.three = `https://cdn.jsdelivr.net/npm/three@${version}/build/three.module.js`;
+    merged.imports['three/addons/'] = `https://cdn.jsdelivr.net/npm/three@${version}/examples/jsm/`;
+  }
+  for (const mappings of Object.values(merged.scopes)) {
+    for (const key of Object.keys(mappings)) {
+      if ((key === 'three' || key.startsWith('three/')) && !validAddress(mappings[key], key.endsWith('/')))
+        delete mappings[key];
+    }
+  }
+  const map = doc.createElement('script');
+  map.type = 'importmap';
+  map.textContent = JSON.stringify(merged).replace(/</g, '\\u003c');
+  // Always before every module script, including maps originally supplied in body.
+  doc.head.prepend(map);
   doc.head.prepend(policy, style, bridge);
   return '<!doctype html>\n' + doc.documentElement.outerHTML;
 }

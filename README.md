@@ -44,7 +44,7 @@ ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/preview.js
 
 ## 接受的格式
 
-- 完整单文件 HTML，或带说明文字的一个 HTML Markdown 代码块（推荐）。保留已有 import map。
+- 完整单文件 HTML，或带说明文字的一个 HTML Markdown 代码块（推荐）。合并已有 import map 并移到 module 脚本前；自动修复 `three` / `three/addons/` 的 null、相对路径和不支持地址，缺失时补齐映射。优先从有效 CDN 映射保留明确的 Three.js 版本，否则使用 0.170.0。
 - 单个 JavaScript / js 代码块，或原始 JavaScript。自动提供默认 import map，并尝试补齐 THREE / OrbitControls 导入。复杂导入请使用完整 HTML。
 - 有 HTML 代码块时优先采用 HTML，其他代码块视为说明；不负责把多文件 HTML/CSS/JS 项目合并。多个 HTML 或多个 JS 代码块会给出错误。
 - 不支持直接运行 JSX、TSX、Python、需要 Vite/npm 的项目或自动解析模型供应商 JSON。请先用对应节点提取 JSON 中的文本为 STRING。
