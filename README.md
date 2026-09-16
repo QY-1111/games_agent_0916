@@ -29,12 +29,14 @@ ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/preview.js
 
 ## 接入模型
 
-1. 将 `MODEL_PROMPT.txt` 作为生成代码的提示词，填写场景需求。
+1. 将 `MODEL_PROMPT.txt` 作为模型的系统提示词，在用户提示词中填写场景需求。
 2. 添加模型文本输出节点和 `Three.js 代码预览` 节点。
 3. 将预览节点的 `code` 控件转换为输入（右键菜单 Convert widget to input / 转换为输入，具体位置依前端版本），把模型的 STRING 输出连接到 `code`。
 4. 执行工作流。场景出现在预览节点内部；鼠标操作由场景代码实现，示例支持拖动旋转、滚轮缩放。
 
 连接结构：`模型节点的 STRING 输出 → Three.js 代码预览.code`
+
+模型输出协议是单个 HTML Markdown 代码块，具体见 `MODEL_PROMPT.txt`。将模型节点的文本字段（常见名称为 `text`、`content` 或 `response`，以实际节点为准）作为 STRING 连接到 `code`；如果上游返回整个 API JSON，先提取其中的文本，不要直接传入包含 `choices`、`usage` 等字段的完整响应。
 
 也可将 `examples/demo-workflow.json` 拖入 ComfyUI 加载单节点示例，或直接把 `examples/demo.html` 内容粘贴到 `code` 并执行，无需模型。输出端 `extracted_code` 是提取后的文本，可继续接其他文本节点；本插件不输出 IMAGE 张量。
 
