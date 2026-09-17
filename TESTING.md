@@ -1,5 +1,15 @@
 # 验证记录
 
+## 2026-09-17 预览高度修复
+
+- 新增离线布局对照页面：运行 `node tests/layout-server.cjs`，打开 `http://127.0.0.1:5180/`。使用提交 cf1ebe3 的原版与工作区修正版比较，模拟宿主把 DOM 控件根元素设成 `display:block`。
+- 浏览器实测：旧版在 420 / 720 / 1200 高度下，iframe 都保持 220px；修正版分别为 344 / 644 / 1124px，填满扣除边框、工具栏和状态栏后的空间。240 高度与缩回 420 也通过。
+- 已通过浏览器检查放大和关闭恢复。此测试使用离线 HTML 隔离布局问题，不依赖 Three.js CDN。
+- 修复将 Flex 布局移入独立子容器，并取消预览区 220px 最小高度；保留原有 iframe sandbox 和 CSP。
+- 尚未安装到用户的实际 ComfyUI 实例；宿主覆盖 display 的复现与截图一致，实际实例仍需替换文件后验证。
+
+## 之前版本的验证记录
+
 - Python unittest：6 项通过，覆盖 HTML/JS 提取、Markdown 包装、空输入/超长输入、多文件/不支持语言拒绝和 ComfyUI UI 返回结构。
 - Node.js 语法检查：单文件前端 preview.js 通过。
 - 前端兼容回归：模拟 nodeCreated/loadedGraphNode 重复调用不重复挂载；缺少创建回调时在 onExecuted 补挂载；检查 getMinHeight/getHeight 及动态高度更新；禁用 crypto.randomUUID 后仍可渲染。

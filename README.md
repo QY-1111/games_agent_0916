@@ -25,6 +25,8 @@ ComfyUI/custom_nodes/ComfyUI-ThreeJS-Preview/web/preview.js
 
 ### 更新已有安装
 
+预览只显示顶部一条、下方大面积留白时：修正版 `web/preview.js` 已将 Flex 布局从宿主管理的 DOM 根元素移到内部子容器，防止宿主设置 `display:block` 后预览区退化为 220px。替换插件安装目录中的同名文件，重启 ComfyUI，并 Ctrl+F5 刷新后重新执行工作流。此修改不需要改动输入的 Three.js 场景代码。也可在插件目录运行 `git pull` 获取修复。
+
 在插件目录运行 `git pull`，重启 ComfyUI 并 Ctrl+F5 刷新页面。此版改为单个前端 JS 文件，移除额外 `.mjs` 模块加载，使用 `nodeCreated` / `loadedGraphNode` 挂载预览并在执行时补挂载，显式声明 DOM 预览高度，并兼容通过局域网 HTTP 访问时缺少 `crypto.randomUUID` 的浏览器环境。
 
 ## 接入模型

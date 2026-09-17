@@ -96,14 +96,19 @@ function attachPreview(node) {
     return;
   }
   const root = document.createElement('div');
-  root.style.cssText = 'display:flex;flex-direction:column;width:100%;height:420px;min-height:420px;background:#111827;border:1px solid #374151;border-radius:8px;overflow:hidden;box-sizing:border-box';
+  // ComfyUI owns the DOM widget root and may set display:block when showing it.
+  // Keep the flex layout on a child that the host does not restyle.
+  root.style.cssText = 'width:100%;height:420px;min-height:420px;overflow:hidden;box-sizing:border-box';
+  const layout = document.createElement('div');
+  layout.style.cssText = 'display:flex;flex-direction:column;width:100%;height:100%;min-height:0;min-width:0;background:#111827;border:1px solid #374151;border-radius:8px;overflow:hidden;box-sizing:border-box';
+  root.append(layout);
   const toolbar = document.createElement('div');
   toolbar.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;padding:8px;flex-shrink:0';
   const status = document.createElement('div');
   status.style.cssText = 'color:#b7c6db;font:12px sans-serif;padding:6px 10px;max-height:54px;overflow:auto;white-space:pre-wrap;flex-shrink:0';
   status.textContent = '预览组件已就绪 · 连接模型 STRING 输出，执行后在此显示 3D 场景。';
   const holder = document.createElement('div');
-  holder.style.cssText = 'flex:1;min-height:220px;position:relative';
+  holder.style.cssText = 'flex:1 1 0;min-height:0;min-width:0;position:relative;overflow:hidden';
   let frame, source = '', kind = 'html', token = '', currentHTML = '', modal;
   let failed = false;
   function stop() {
@@ -126,7 +131,7 @@ function attachPreview(node) {
   }
   function closeModal() {
     if (!modal) return;
-    root.append(holder); modal.remove(); modal = null;
+    layout.append(holder); modal.remove(); modal = null;
     render(); // Moving an iframe resets its browsing context.
   }
   function button(label, action) {
@@ -160,7 +165,7 @@ function attachPreview(node) {
     else if (!failed) status.textContent = String(e.data.message).slice(0,1500);
   };
   window.addEventListener('message', receive);
-  root.append(toolbar, status, holder);
+  layout.append(toolbar, status, holder);
   let previewHeight = 420;
   root.style.setProperty('--comfy-widget-min-height', '420px');
   root.style.setProperty('--comfy-widget-height', '420px');
